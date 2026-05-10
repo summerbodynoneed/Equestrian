@@ -1,0 +1,779 @@
+/* ============================================================
+   EQUESTRIAN WORLD TOUR — style.css
+   Fidèle au GDD : slab-serif condensed, palette rouge/rose/violet
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap');
+
+/* ────────────────────────────────────────────
+   TOKENS — extraits directement du GDD
+   ──────────────────────────────────────────── */
+:root {
+  /* Couleurs principales (couverture & slides GDD) */
+  --bg-deep:       #0e0d17;   /* fond très sombre bleu-nuit */
+  --bg-dark:       #1a1825;   /* fond secondaire */
+  --bg-card:       rgba(255, 255, 255, 0.03);
+
+  --red:           #c0392b;   /* rouge dominant GDD */
+  --red-bright:    #e63946;   /* rouge vif (accents) */
+  --pink:          #e91e8c;   /* rose magenta GDD */
+  --purple-dark:   #2d1b5e;   /* violet profond GDD */
+  --purple-mid:    #6c2bd9;   /* violet moyen blobs */
+
+  --cream:         #f5ede0;   /* texte principal GDD */
+  --cream-dim:     rgba(245, 237, 224, 0.55);
+  --cream-ghost:   rgba(245, 237, 224, 0.12);
+  --cream-border:  rgba(245, 237, 224, 0.08);
+
+  /* Halftone dots (slides GDD) */
+  --dot-color:     rgba(192, 57, 43, 0.55);
+  --dot-size:      18px;
+
+  /* Typographie */
+  --font-display:  'Alfa Slab One', serif;        /* titres GDD — chunky slab */
+  --font-ui:       'Barlow Condensed', sans-serif; /* labels, nav, badges */
+  --font-body:     'Barlow', sans-serif;           /* corps de texte */
+
+  /* Espacements */
+  --pad-section:   120px 64px;
+  --pad-nav:       22px 64px;
+
+  /* Rayons / misc */
+  --radius-none:   0px;   /* le GDD est très carré / no-radius */
+  --transition:    0.28s ease;
+}
+
+
+/* ────────────────────────────────────────────
+   RESET & BASE
+   ──────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+/* curseur personnalisé supprimé — curseur système par défaut */
+}
+
+/* Grain — texture noise omniprésente dans le GDD */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.45;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+
+/* ────────────────────────────────────────────
+   UTILITAIRES LAYOUT
+   ──────────────────────────────────────────── */
+
+/* Pattern halftone rouge (slides 2, 3, 5, 7…) */
+.halftone {
+  position: absolute;
+  background-image: radial-gradient(var(--dot-color) 1.8px, transparent 1.8px);
+  background-size: var(--dot-size) var(--dot-size);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Blobs dégradés (mesh gradient du GDD) */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+/* Révélation au scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ────────────────────────────────────────────
+   NAVIGATION
+   ──────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pad-nav);
+  background: linear-gradient(to bottom, rgba(14, 13, 23, 0.92), transparent);
+  backdrop-filter: blur(3px);
+}
+
+/* Logo zone */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.nav-logo-img {
+  width: 48px;
+  height: 48px;
+  opacity: 0.9;
+  filter: brightness(0) invert(1); /* force blanc comme dans le GDD */
+}
+
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  color: var(--cream);
+  line-height: 1.15;
+}
+
+.nav-logo-sub {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-top: 2px;
+}
+
+/* Liens nav */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 42px;
+}
+
+.nav-links a {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  text-decoration: none;
+  position: relative;
+  transition: color var(--transition);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; left: 0;
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, var(--red-bright), var(--pink));
+  transition: width 0.35s ease;
+}
+
+.nav-links a:hover { color: var(--cream); }
+.nav-links a:hover::after { width: 100%; }
+
+
+/* ────────────────────────────────────────────
+   SECTIONS — BASE
+   ──────────────────────────────────────────── */
+section {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+
+/* ────────────────────────────────────────────
+   TYPOGRAPHIE
+   ──────────────────────────────────────────── */
+
+/* Hero / titre principal — Alfa Slab One (chunky slab GDD) */
+.title-hero {
+  font-family: var(--font-display);
+  font-size: clamp(4.5rem, 9.5vw, 9.5rem);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--cream);
+}
+
+/* Variante outline (lettre creuse sur la couverture) */
+.title-hero .outline {
+  -webkit-text-stroke: 2px var(--cream);
+  color: transparent;
+}
+
+/* Titre de section — plus petit que hero */
+.title-section {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.9;
+  color: var(--cream);
+}
+
+/* Eyebrow — petite étiquette au-dessus des titres */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.68rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-bottom: 20px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--red-bright);
+  flex-shrink: 0;
+}
+
+/* Corps de texte */
+.body-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--cream-dim);
+  max-width: 600px;
+}
+
+/* Label petit — badges, meta */
+.label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+
+/* ────────────────────────────────────────────
+   CARTES / FEATURE CARDS
+   ──────────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  border: 1px solid var(--cream-border);
+}
+
+.card {
+  padding: 30px 22px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--cream-border);
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition);
+}
+
+.card:last-child { border-right: none; }
+
+/* Barre de couleur en bas au hover */
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), var(--pink));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.38s ease;
+}
+
+.card:hover { background: rgba(255,255,255,0.05); }
+.card:hover::after { transform: scaleX(1); }
+
+.card-num {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  color: rgba(192, 57, 43, 0.22);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--cream-dim);
+  line-height: 1.55;
+}
+
+
+/* ────────────────────────────────────────────
+   PROGRESS / TRACK SCENE
+   ──────────────────────────────────────────── */
+.track-scene {
+  position: relative;
+  width: 100%;
+  height: 175px;
+}
+
+.track-ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: linear-gradient(to right, rgba(192,57,43,0.07), rgba(192,57,43,0.02));
+  border-top: 1px solid rgba(192,57,43,0.18);
+}
+
+/* Barre de progression */
+.progress-bar-track {
+  position: absolute;
+  bottom: 28px;
+  left: 5%; right: 5%;
+  height: 3px;
+  background: var(--cream-ghost);
+}
+
+.progress-bar-fill {
+  position: relative;
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--pink));
+  box-shadow: 0 0 18px rgba(233, 30, 140, 0.5);
+}
+
+.progress-label {
+  position: absolute;
+  right: 0; top: -26px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--red-bright);
+  white-space: nowrap;
+}
+
+/* Cheval animé */
+.horse-wrapper {
+  position: absolute;
+  bottom: 40px;
+  transform: translateX(-50%);
+}
+
+.horse-gif {
+  width: 200px;
+  /* Supprime le fond blanc du GIF */
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 4px 16px rgba(200, 144, 42, 0.3));
+}
+
+/* animations galop supprimées — remplacées par le GIF */
+
+
+/* ────────────────────────────────────────────
+   MILESTONES (jalons de roadmap)
+   ──────────────────────────────────────────── */
+.milestones {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.milestone {
+  padding: 18px 16px;
+  border: 1px solid var(--cream-border);
+  background: rgba(255,255,255,0.015);
+  position: relative;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.milestone.done {
+  border-color: rgba(192, 57, 43, 0.32);
+  background: rgba(192, 57, 43, 0.05);
+}
+
+.milestone.active {
+  border-color: var(--red-bright);
+  background: rgba(192, 57, 43, 0.09);
+  box-shadow: 0 0 22px rgba(230, 57, 70, 0.12);
+}
+
+.milestone-badge {
+  position: absolute;
+  top: -10px; right: 10px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: var(--red);
+  color: var(--cream);
+}
+
+.milestone-phase {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.milestone.done   .milestone-phase { color: var(--red-bright); }
+.milestone.active .milestone-phase { color: #ff6b6b; }
+.milestone:not(.done):not(.active) .milestone-phase { color: rgba(245,237,224,0.28); }
+
+.milestone-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 3px;
+}
+
+.milestone:not(.done):not(.active) .milestone-name { color: rgba(245,237,224,0.38); }
+
+.milestone-months {
+  font-size: 0.73rem;
+  font-weight: 300;
+}
+
+.milestone.done   .milestone-months { color: rgba(192,57,43,0.7); }
+.milestone.active .milestone-months { color: rgba(230,57,70,0.7); }
+.milestone:not(.done):not(.active) .milestone-months { color: rgba(245,237,224,0.28); }
+
+
+/* ────────────────────────────────────────────
+   ROADMAP CARDS (bloc texte sous les jalons)
+   ──────────────────────────────────────────── */
+.roadmap-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.roadmap-card {
+  padding: 26px 26px 26px 24px;
+  border-left: 3px solid rgba(192, 57, 43, 0.35);
+  background: rgba(255,255,255,0.018);
+}
+
+.roadmap-card-title {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-bottom: 10px;
+}
+
+.roadmap-card-text {
+  font-size: 0.84rem;
+  font-weight: 300;
+  color: var(--cream-dim);
+  line-height: 1.68;
+}
+
+
+/* ────────────────────────────────────────────
+   FORMULAIRE CONTACT
+   ──────────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+/* Infos contact */
+.contact-info { display: flex; flex-direction: column; gap: 14px; }
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--cream-border);
+  background: rgba(255,255,255,0.02);
+  transition: border-color var(--transition);
+}
+
+.contact-item:hover { border-color: rgba(192,57,43,0.38); }
+
+.contact-item-icon {
+  width: 34px; height: 34px;
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.28);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-item-icon svg {
+  width: 15px; height: 15px;
+  stroke: var(--red-bright);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.contact-item-label {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245,237,224,0.32);
+  margin-bottom: 2px;
+}
+
+.contact-item-value {
+  font-size: 0.88rem;
+  color: var(--cream);
+}
+
+/* Form */
+.contact-form { display: flex; flex-direction: column; gap: 18px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 7px; }
+
+.field label {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(245,237,224,0.38);
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--cream-border);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 300;
+  padding: 13px 15px;
+  outline: none;
+  appearance: none;
+  transition: border-color var(--transition), background var(--transition);
+  width: 100%;
+}
+
+.field select option { background: #1c1828; }
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--red);
+  background: rgba(192,57,43,0.05);
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: rgba(245,237,224,0.18); }
+
+.field textarea { min-height: 115px; resize: vertical; }
+
+
+/* ────────────────────────────────────────────
+   BOUTON PRINCIPAL
+   ──────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.76rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: linear-gradient(135deg, var(--red) 0%, var(--pink) 100%);
+  border: none;
+  padding: 17px 38px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+/* Shimmer au hover */
+.btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.12);
+  transform: translateX(-110%) skewX(-15deg);
+  transition: transform 0.4s ease;
+}
+
+.btn:hover::before { transform: translateX(110%) skewX(-15deg); }
+
+/* Variante outline */
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(192,57,43,0.5);
+  color: var(--cream-dim);
+}
+
+.btn-outline:hover { border-color: var(--red-bright); color: var(--cream); }
+.btn-outline::before { display: none; }
+
+
+/* ────────────────────────────────────────────
+   SCROLL HINT (bas page d'accueil)
+   ──────────────────────────────────────────── */
+.scroll-hint {
+  position: absolute;
+  bottom: 34px; left: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-ui);
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(245,237,224,0.3);
+}
+
+.scroll-hint-line {
+  width: 38px; height: 1px;
+  background: rgba(245,237,224,0.15);
+  position: relative; overflow: hidden;
+}
+
+.scroll-hint-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: var(--red-bright);
+  animation: scanLine 2s 0.8s ease infinite;
+}
+
+@keyframes scanLine {
+  0%   { left: -100%; }
+  100% { left: 100%; }
+}
+
+
+/* ────────────────────────────────────────────
+   ÉTAT SUCCÈS FORMULAIRE
+   ──────────────────────────────────────────── */
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 56px 36px;
+  border: 1px solid rgba(192,57,43,0.28);
+  background: rgba(192,57,43,0.04);
+}
+
+.form-success.show { display: block; }
+
+.form-success-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 14px;
+}
+
+.form-success h3 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.form-success p {
+  font-size: 0.88rem;
+  color: var(--cream-dim);
+}
+
+
+/* ────────────────────────────────────────────
+   FOOTER
+   ──────────────────────────────────────────── */
+footer {
+  padding: 28px 64px;
+  border-top: 1px solid var(--cream-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-copy {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245,237,224,0.18);
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  color: rgba(245,237,224,0.15);
+}
+
+
+/* ────────────────────────────────────────────
+   ANIMATIONS D'ENTRÉE
+   ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.anim-1 { animation: fadeUp 0.75s 0.05s ease both; }
+.anim-2 { animation: fadeUp 0.75s 0.15s ease both; }
+.anim-3 { animation: fadeUp 0.75s 0.25s ease both; }
+.anim-4 { animation: fadeUp 0.75s 0.38s ease both; }
+
+
+/* ────────────────────────────────────────────
+   RESPONSIVE — tablette
+   ──────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  :root { --pad-section: 100px 40px; --pad-nav: 18px 40px; }
+  .card-grid     { grid-template-columns: repeat(2, 1fr); }
+  .milestones    { grid-template-columns: repeat(3, 1fr); }
+  .roadmap-cards { grid-template-columns: 1fr; }
+  .contact-grid  { grid-template-columns: 1fr; gap: 48px; }
+}
+
+@media (max-width: 720px) {
+  :root { --pad-section: 80px 24px; --pad-nav: 16px 24px; }
+  .card-grid  { grid-template-columns: 1fr; }
+  .milestones { grid-template-columns: 1fr 1fr; }
+  .title-hero { font-size: clamp(3.2rem, 14vw, 5rem); }
+  .nav-links  { display: none; }
+  footer      { flex-direction: column; gap: 12px; text-align: center; }
+}
